@@ -38,21 +38,25 @@ function moveAndResize(selection, command) {
                 switch(command) {
                     case 'width': {
                         if (bounds.width !== artboard.width || bounds.x !== 0) {
-                            move(obj, bounds);
+
+                            // Move X not Y
+                            moveX(obj, bounds);
                             resize(obj, artboard.width, bounds.height);
                         }
                         break; 
                     }
                     case 'height': {
                         if (bounds.height !== artboard.height || bounds.y !== 0) {
-                            move(obj, bounds);
-                            resize(obj, bounds.width, artboad.height);
+
+                            // Move Y not X
+                            moveY(obj, bounds);
+                            resize(obj, bounds.width, artboard.height);
                         }
                         break; 
                     }
                     default: {
                         if ((bounds.width !== artboard.width || bounds.height !== artboard.height) || (bounds.x !== 0 || bounds.y !== 0)) {
-                            move(obj, bounds);
+                            moveBoth(obj, bounds);
                             resize(obj, artboard.width, artboard.height);
                         }
                         break; 
@@ -63,26 +67,71 @@ function moveAndResize(selection, command) {
     }
 }
 
-function move(obj, originalBounds) {
+function moveY(obj, originalBounds) {
+    const width = originalBounds.width;
+    const y = originalBounds.y;
+    let x = 0;
+
+    // Calculate offsets based on the text alignment
+    switch(obj.textAlign) {
+        case 'center': {
+            x = -width/2;
+            break;
+        }
+        case 'right': {
+            x = -width;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+
+    // Offset by the current relative position
+    obj.moveInParentCoordinates(x, -y);
+}
+
+function moveX(obj, originalBounds) {
     const width = originalBounds.width;
     const y = originalBounds.y;
     let x = originalBounds.x;
 
-    if (0 !== originalBounds.x) {
+    // Calculate offsets based on the text alignment
+    switch(obj.textAlign) {
+        case 'center': {
+            x = x + width/2;
+            break;
+        }
+        case 'right': {
+            x = x + width;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 
-        // Calculate offsets based on the text alignment
-        switch(obj.textAlign) {
-            case 'center': {
-                x = x + width/2;
-                break;
-            }
-            case 'right': {
-                x = x + width;
-                break;
-            }
-            default: {
-                break;
-            }
+    // Offset by the current relative position
+    obj.moveInParentCoordinates(-x, 0);
+}
+
+function moveBoth(obj, originalBounds) {
+    const width = originalBounds.width;
+    const y = originalBounds.y;
+    let x = originalBounds.x;
+
+    // Calculate offsets based on the text alignment
+    switch(obj.textAlign) {
+        case 'center': {
+            x = x + width/2;
+            break;
+        }
+        case 'right': {
+            x = x + width;
+            break;
+        }
+        default: {
+            break;
         }
     }
 
