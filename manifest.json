@@ -22,7 +22,7 @@
       "menuItems": [
         {
           "type":"menu",
-          "label":"Fit to Artboard",
+          "label":"Fit to Artboard Width & Height",
           "commandId": "FitToArtboard"
         },
         {

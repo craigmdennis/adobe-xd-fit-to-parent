@@ -1,20 +1,20 @@
 // Fit to artboard
 function fitToArtboard(selection) {
-    objectResize(selection)
+    moveAndResize(selection)
 }
 
 // Fit to artboard height
 function fitToArtboardHeight(selection) {
-    objectResize(selection, 'height')
+    moveAndResize(selection, 'height')
 }
 
 // Fit to artboard width
 function fitToArtboardWidth(selection) {
-    objectResize(selection, 'width')
+    moveAndResize(selection, 'width')
 }
 
 // Resize and move
-function objectResize(selection, command) {
+function moveAndResize(selection, command) {
 
     // If no selection
     if (0 === selection.length) {
@@ -26,29 +26,86 @@ function objectResize(selection, command) {
 
         // Get the focussed artboard
         const artboard = selection.focusedArtboard;
-        const topLeft = {x: 0, y: 0};
 
-        selection.items.forEach(function (obj) {
-            const bounds = obj.boundsInParent;
+        if (0 === selection.focusedArtboard.length) {
+            console.error('The object isn\'t on an Artboard');
+            return false;
 
-            switch(command) {
-                case 'width': {
-                    obj.resize(artboard.width, bounds.height);
-                    obj.placeInParentCoordinates(topLeft,{x: 0, y: bounds.y});
-                    break; 
+        } else {
+            selection.items.forEach(function (obj) {
+                const bounds = obj.boundsInParent;
+
+                switch(command) {
+                    case 'width': {
+                        if (bounds.width !== artboard.width || bounds.x !== 0) {
+                            move(obj, bounds);
+                            resize(obj, artboard.width, bounds.height);
+                        }
+                        break; 
+                    }
+                    case 'height': {
+                        if (bounds.height !== artboard.height || bounds.y !== 0) {
+                            move(obj, bounds);
+                            resize(obj, bounds.width, artboad.height);
+                        }
+                        break; 
+                    }
+                    default: {
+                        if ((bounds.width !== artboard.width || bounds.height !== artboard.height) || (bounds.x !== 0 || bounds.y !== 0)) {
+                            move(obj, bounds);
+                            resize(obj, artboard.width, artboard.height);
+                        }
+                        break; 
+                    }
                 }
-                case 'height': {
-                    obj.resize(bounds.width, artboard.height);
-                    obj.placeInParentCoordinates(topLeft,{x: bounds.x, y: 0});
-                    break; 
-                }
-                default: {
-                    obj.resize(artboard.width, artboard.height);
-                    obj.placeInParentCoordinates(topLeft,topLeft);
-                    break; 
-                }
+            });
+        }
+    }
+}
+
+function move(obj, originalBounds) {
+    const width = originalBounds.width;
+    const y = originalBounds.y;
+    let x = originalBounds.x;
+
+    if (0 !== originalBounds.x) {
+
+        // Calculate offsets based on the text alignment
+        switch(obj.textAlign) {
+            case 'center': {
+                x = x + width/2;
+                break;
             }
-        });
+            case 'right': {
+                x = x + width;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
+    // Offset by the current relative position
+    obj.moveInParentCoordinates(-x, -y);
+}
+
+function resize(obj, newWidth, newHeight) {
+
+    // If the element is text
+    if (obj.constructor.name === 'Text') {
+
+        // Change from point text and resize
+        obj.areaBox = {
+            width: newWidth,
+            height: newHeight
+        }
+    
+    // If it's anything else
+    } else {
+
+        // Resize as normal
+        obj.resize(newWidth, newHeight);
     }
 }
 
