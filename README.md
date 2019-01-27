@@ -1,2 +1,5 @@
-# adobe-xd-fit-to-parent
-Resize an object to match the size of the parent.
+# Fit to Artboard for Adobe XD
+Adds menu items for resizing objects to match the bounds of their parent group or artboard.
+
+1. Search for and install "Fit to Parent" in Adobe XD plugins directory.
+2. Set keyboard shortcuts.
