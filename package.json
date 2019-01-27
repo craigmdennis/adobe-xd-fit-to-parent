@@ -1,0 +1,23 @@
+{
+  "name": "adobe-xd-fit-to-artboard",
+  "version": "1.0.0",
+  "description": "Adds menu items for resizing objects to match the bounds of its parent artboard.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigmdennis/adobe-xd-fit-to-artboard.git"
+  },
+  "keywords": [
+    "Adobe",
+    "XD"
+  ],
+  "author": "Craig Dennis <craig@simplebitdesign.com> (https://simplebitdesign.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/craigmdennis/adobe-xd-fit-to-artboard/issues"
+  },
+  "homepage": "https://github.com/craigmdennis/adobe-xd-fit-to-artboard#readme"
+}
