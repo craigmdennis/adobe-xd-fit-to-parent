@@ -1,0 +1,41 @@
+{
+  "name" : "Fit to Artboard",
+  "id" : "b145eb0e",
+  "author": "Craig Dennis",
+  "version" : "1.0.0",
+  "description" : "Adds menu items for resizing objects to match the bounds of its parent artboard.",
+  "icons" : [
+    {
+      "path" : "images/icon.png",
+      "width" : 96,
+      "height" : 96
+    }
+  ],
+  "host" : {
+    "app" : "XD",
+    "minVersion" : "13.0.0"
+  },
+  "uiEntryPoints":[
+    {
+      "type":"menu",
+      "label":"Fit to Artboard",
+      "menuItems": [
+        {
+          "type":"menu",
+          "label":"Fit to Artboard",
+          "commandId": "FitToArtboard"
+        },
+        {
+          "type":"menu",
+          "label":"Fit to Artboard Width",
+          "commandId": "FitToArtboardWidth"
+        },
+        {
+          "type":"menu",
+          "label":"Fit to Artboard Height",
+          "commandId": "FitToArtboardHeight"
+        }
+      ]
+    }
+  ]
+}
