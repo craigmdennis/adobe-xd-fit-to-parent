@@ -6,7 +6,7 @@
   "description" : "Adds menu items for resizing objects to match the bounds of its parent artboard.",
   "icons" : [
     {
-      "path" : "images/icon.png",
+      "path" : "images/resize-to-artboard-icon@2x.png",
       "width" : 96,
       "height" : 96
     }
