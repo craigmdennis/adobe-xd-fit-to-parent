@@ -1,44 +1,48 @@
-// Fit to parent width & height
-function fitToParent(selection) {
-    fit(selection)
+// Fit to artboard
+function fitToArtboard(selection) {
+    moveAndResize(selection)
 }
 
-// Fit to parent width
-function fitToParentWidth(selection) {
-    fit(selection, 'width')
+// Fit to artboard height
+function fitToArtboardHeight(selection) {
+    moveAndResize(selection, 'height')
 }
 
-// Fit to parent height
-function fitToParentHeight(selection) {
-    fit(selection, 'height')
+// Fit to artboard width
+function fitToArtboardWidth(selection) {
+    moveAndResize(selection, 'width')
 }
 
 // Resize and move
-function fit(selection, command) {
+function moveAndResize(selection, command) {
 
     // If no selection
     if (0 === selection.length) {
-        console.log('No objects selected.')
+        console.error('No elements selected.')
         return false;
     
     // If objects selected
     } else {
-        const parent = selection.insertionParent;
-        const parentBounds = parent.boundsInParent;
 
-        // If there is no parent
-        if ('RootNode' === parent.constructor.name) {
-            console.log('Like Batman, the object doesn\'t have any parents.');
+        // Get the focussed artboard
+        const artboard = selection.focusedArtboard;
+
+        // If there is no parent artboard
+        if (0 === selection.focusedArtboard.length) {
+            console.error('The object isn\'t on an Artboard');
             return false;
 
-        // If there is a parent
+        // If there is a parent artboard
         } else {
 
             // Iterate through the selection
-            selection.items.forEach(function (item) {
+            selection.items.forEach(function (obj) {
 
                 // Get each items details
-                const itemBounds = item.boundsInParent;
+                const bounds = obj.boundsInParent;
+
+                // Move the item *before* resizing to calculate positions
+                move(obj, bounds, command);
 
                 // Resize nased on the command
                 // (and it needed to avoid multiple undo entries)
@@ -46,28 +50,24 @@ function fit(selection, command) {
 
                     // Reisze the width
                     case 'width': {
-                        if (itemBounds.width !== parentBounds.width) {
-                            move(item, parent, command);
-                            resize(item, parentBounds.width, itemBounds.height);
+                        if (bounds.width !== artboard.width || bounds.x !== 0) {
+                            resize(obj, artboard.width, bounds.height);
                         }
                         break; 
                     }
 
                     // Resize the height
                     case 'height': {
-
-                        if (itemBounds.height !== parentBounds.height) {
-                            move(item, parent, command);
-                            resize(item, itemBounds.width, parentBounds.height);
+                        if (bounds.height !== artboard.height || bounds.y !== 0) {
+                            resize(obj, bounds.width, artboard.height);
                         }
                         break; 
                     }
 
                     // Resize both
                     default: {
-                        if ((itemBounds.width !== parentBounds.width) || (itemBounds.height !== parentBounds.height)) {
-                            move(item, parent, command);
-                            resize(item, parentBounds.width, parentBounds.height);
+                        if ((bounds.width !== artboard.width || bounds.height !== artboard.height) || (bounds.x !== 0 || bounds.y !== 0)) {
+                            resize(obj, artboard.width, artboard.height);
                         }
                         break; 
                     }
@@ -78,50 +78,42 @@ function fit(selection, command) {
 }
 
 // Move based on the type of element
-function move(item, parent, command) {
-    const itemGlobalBounds = item.globalBounds;
-    const parentBounds = parent.boundsInParent;
-    const itemWidth = item.boundsInParent.width;
-    let groupOffsetY = 0;
+function move(obj, originalBounds, command) {
+    const originalWidth = originalBounds.width;
     let offsetX;
     let offsetY;
     let x;
     let y;
 
-    // Not sure why group positioning is -2px off when positioning on the y axis
-    if ('Group' === parent.constructor.name && command !== 'width') {
-        groupOffsetY = 2;
-    }
-
     // Calculate offsets based on the direction of resize
     switch(command) {
         case 'width': {
-            offsetX = (itemGlobalBounds.x - parentBounds.x) / -1;
+            offsetX = -originalBounds.x;
             offsetY = 0;
             break;
         }
         case 'height': {
             offsetX = 0;
-            offsetY = (itemGlobalBounds.y - parentBounds.y) / -1;
+            offsetY = -originalBounds.y;
             break;
         }
         default: {
-            offsetX = (itemGlobalBounds.x - parentBounds.x) / -1;
-            offsetY = (itemGlobalBounds.y - parentBounds.y) / -1;
+            offsetX = -originalBounds.x;
+            offsetY = -originalBounds.y;
             break;
         }
     }
 
     // Calculate offsets based on the text alignment as the anchor point is different
     // https://adobexdplatform.com/plugin-docs/reference/scenegraph.html#texttextalign--string
-    switch(item.textAlign) {
+    switch(obj.textAlign) {
         case 'center': {
-            x = offsetX - itemWidth/2;
+            x = offsetX - originalWidth/2;
             y = offsetY;
             break;
         }
         case 'right': {
-            x = offsetX - itemWidth;
+            x = offsetX - originalWidth;
             y = offsetY;
             break;
         }
@@ -133,17 +125,17 @@ function move(item, parent, command) {
     }
 
     // Move the element by relative pixels
-    item.moveInParentCoordinates(x, y + groupOffsetY);
+    obj.moveInParentCoordinates(x, y);
 }
 
 // Resize the object
-function resize(item, newWidth, newHeight) {
+function resize(obj, newWidth, newHeight) {
 
-    // If it's text
-    if ('Text' === item.constructor.name) {
+    // IF it's text
+    if (obj.constructor.name === 'Text') {
 
         // Change from point text and resize
-        item.areaBox = {
+        obj.areaBox = {
             width: newWidth,
             height: newHeight
         }
@@ -152,14 +144,14 @@ function resize(item, newWidth, newHeight) {
     } else {
 
         // Resize as normal
-        item.resize(newWidth, newHeight);
+        obj.resize(newWidth, newHeight);
     }
 }
 
 module.exports = {
     commands: {
-        "FitToParent": fitToParent,
-        "FitToParentWidth": fitToParentWidth,
-        "FitToParentHeight": fitToParentHeight
+        "FitToArtboardHeight": fitToArtboardHeight,
+        "FitToArtboardWidth": fitToArtboardWidth,
+        "FitToArtboard": fitToArtboard,
     }
 };

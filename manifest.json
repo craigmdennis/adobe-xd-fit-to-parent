@@ -1,12 +1,12 @@
 {
-  "name" : "Fit to Parent",
+  "name" : "Fit to Artboard",
   "id" : "b145eb0e",
   "author": "Craig Dennis",
-  "version" : "1.1.0",
-  "description" : "Resize objects to match the size of their parent group or artboard.",
+  "version" : "1.0.0",
+  "description" : "Adds menu items for resizing objects to match the bounds of its parent artboard.",
   "icons" : [
     {
-      "path" : "images/resize-to-parent-icon@2x.png",
+      "path" : "images/resize-to-artboard-icon@2x.png",
       "width" : 96,
       "height" : 96
     }
@@ -18,22 +18,22 @@
   "uiEntryPoints":[
     {
       "type":"menu",
-      "label":"Fit to Parent",
+      "label":"Fit to Artboard",
       "menuItems": [
         {
           "type":"menu",
-          "label":"Fit to Parent Width & Height",
-          "commandId": "FitToParent"
+          "label":"Fit to Artboard Width & Height",
+          "commandId": "FitToArtboard"
         },
         {
           "type":"menu",
-          "label":"Fit to Parent Width",
-          "commandId": "FitToParentWidth"
+          "label":"Fit to Artboard Width",
+          "commandId": "FitToArtboardWidth"
         },
         {
           "type":"menu",
-          "label":"Fit to Parent Height",
-          "commandId": "FitToParentHeight"
+          "label":"Fit to Artboard Height",
+          "commandId": "FitToArtboardHeight"
         }
       ]
     }
