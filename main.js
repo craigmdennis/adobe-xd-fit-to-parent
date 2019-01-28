@@ -88,6 +88,26 @@ function move(item, parent, command) {
     let x;
     let y;
 
+    // Calculate whether text is point or area
+    function textCalc(item, offset, adjustment) {
+        let calc;
+
+        // If it's area
+        if (item.areaBox) {
+
+            // Treat it like a GraphicNode
+            calc = offset;
+        
+        // If it's Point
+        } else {
+
+            // Calculate the offset
+            calc = offset - adjustment;
+        }
+
+        return calc;
+    }
+
     // Not sure why group positioning is -2px off when positioning on the y axis
     if ('Group' === parent.constructor.name && command !== 'width') {
         groupOffsetY = 2;
@@ -116,12 +136,12 @@ function move(item, parent, command) {
     // https://adobexdplatform.com/plugin-docs/reference/scenegraph.html#texttextalign--string
     switch(item.textAlign) {
         case 'center': {
-            x = offsetX - itemWidth/2;
+            x = textCalc(item, offsetX, itemWidth/2);
             y = offsetY;
             break;
         }
         case 'right': {
-            x = offsetX - itemWidth;
+            x = textCalc(item, offsetX, itemWidth);
             y = offsetY;
             break;
         }
