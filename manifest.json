@@ -18,22 +18,27 @@
   "uiEntryPoints":[
     {
       "type":"menu",
-      "label":"Fit to Artboard",
+      "label":"Fit to Parent",
       "menuItems": [
         {
           "type":"menu",
+<<<<<<< HEAD
           "label":"Fit to Artboard Width & Height",
           "commandId": "FitToArtboard"
+=======
+          "label":"Fit to Parent Width & Height",
+          "commandId": "FitToParent"
+>>>>>>> Resize to parent and not just artboard
         },
         {
           "type":"menu",
-          "label":"Fit to Artboard Width",
-          "commandId": "FitToArtboardWidth"
+          "label":"Fit to Parent Width",
+          "commandId": "FitToParentWidth"
         },
         {
           "type":"menu",
-          "label":"Fit to Artboard Height",
-          "commandId": "FitToArtboardHeight"
+          "label":"Fit to Parent Height",
+          "commandId": "FitToParentHeight"
         }
       ]
     }
