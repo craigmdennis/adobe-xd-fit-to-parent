@@ -48,7 +48,7 @@ function fit(selection, command) {
                     // Reisze the width
                     case 'width': {
                         if (itemBounds.width !== parentBounds.width) {
-                            move(item, parent, command, artboard);
+                            move(item, parent, command, artboard, selection);
                             resize(item, parentBounds.width, itemBounds.height);
                         }
                         break; 
@@ -58,7 +58,7 @@ function fit(selection, command) {
                     case 'height': {
 
                         if (itemBounds.height !== parentBounds.height) {
-                            move(item, parent, command, artboard);
+                            move(item, parent, command, artboard, selection);
                             resize(item, itemBounds.width, parentBounds.height);
                         }
                         break; 
@@ -67,7 +67,7 @@ function fit(selection, command) {
                     // Resize both
                     default: {
                         if ((itemBounds.width !== parentBounds.width) || (itemBounds.height !== parentBounds.height)) {
-                            move(item, parent, command, artboard);
+                            move(item, parent, command, artboard, selection);
                             resize(item, parentBounds.width, parentBounds.height);
                         }
                         break; 
@@ -104,36 +104,43 @@ function move(item, parent, command, artboard) {
     const parentBounds = parent.boundsInParent;
     const itemBounds = item.boundsInParent;
     const itemWidth = itemBounds.width;
-    let groupOffsetY = 0;
     let artboardOffsetX = 0;
     let artboardOffsetY = 0;
-    let offsetX;
-    let offsetY;
+    let offsetX = 0;
+    let offsetY = 0;
+    let calculatedOffsetX;
+    let calculatedOffsetY;
     let x;
     let y;
 
-    // If the selection is on an Artboard and not a Group, offset the artboard position
-    if (artboard && 'Group' !== item.constructor.name) {
-        const artboardBounds = artboard.boundsInParent;
-        artboardOffsetX = artboardBounds.x;
-        artboardOffsetY = artboardBounds.y;
+    // If the selection is on an Artboard and not a Group
+    if (artboard) {
+
+        if (parent && 'Group' === parent.constructor.name) {
+            const artboardBounds = artboard.boundsInParent;
+            artboardOffsetX = artboardBounds.x;
+            artboardOffsetY = artboardBounds.y;
+        }
     }
+
+    calculatedOffsetX = -(itemGlobalBounds.x - artboardOffsetX - parentBounds.x);
+    calculatedOffsetY = -(itemGlobalBounds.y - artboardOffsetY - parentBounds.y);
     
     // Calculate offsets based on the direction of resize
     switch(command) {
         case 'width': {
-            offsetX = -(itemGlobalBounds.x - artboardOffsetX - parentBounds.x);
+            offsetX = calculatedOffsetX;
             offsetY = 0;
             break;
         }
         case 'height': {
             offsetX = 0;
-            offsetY = -(itemGlobalBounds.y - artboardOffsetY - parentBounds.y);
+            offsetY = calculatedOffsetY;
             break;
         }
         default: {
-            offsetX = -(itemGlobalBounds.x - artboardOffsetX - parentBounds.x);
-            offsetY = -(itemGlobalBounds.y - artboardOffsetY - parentBounds.y);
+            offsetX = calculatedOffsetX;
+            offsetY = calculatedOffsetY;
             break;
         }
     }
@@ -159,7 +166,7 @@ function move(item, parent, command, artboard) {
     }
 
     // Move the element by relative pixels
-    item.moveInParentCoordinates(x, y + groupOffsetY);
+    item.moveInParentCoordinates(x, y);
 }
 
 // Resize the object
