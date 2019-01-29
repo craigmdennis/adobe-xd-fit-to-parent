@@ -2,11 +2,11 @@
   "name" : "Fit to Parent",
   "id" : "b145eb0e",
   "author": "Craig Dennis",
-  "version" : "1.1.0",
+  "version" : "1.1.1",
   "description" : "Resize objects to match the size of their parent group or artboard.",
   "icons" : [
     {
-      "path" : "images/resize-to-parent-icon@2x.png",
+      "path" : "images/fit-to-parent-icon@2x.png",
       "width" : 96,
       "height" : 96
     }

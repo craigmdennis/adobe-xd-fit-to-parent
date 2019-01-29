@@ -25,6 +25,7 @@ function fit(selection, command) {
     } else {
         const parent = selection.insertionParent;
         const parentBounds = parent.boundsInParent;
+        const artboard = selection.focusedArtboard;
 
         // If there is no parent
         if ('RootNode' === parent.constructor.name) {
@@ -47,7 +48,7 @@ function fit(selection, command) {
                     // Reisze the width
                     case 'width': {
                         if (itemBounds.width !== parentBounds.width) {
-                            move(item, parent, command);
+                            move(item, parent, command, artboard);
                             resize(item, parentBounds.width, itemBounds.height);
                         }
                         break; 
@@ -57,7 +58,7 @@ function fit(selection, command) {
                     case 'height': {
 
                         if (itemBounds.height !== parentBounds.height) {
-                            move(item, parent, command);
+                            move(item, parent, command, artboard);
                             resize(item, itemBounds.width, parentBounds.height);
                         }
                         break; 
@@ -66,7 +67,7 @@ function fit(selection, command) {
                     // Resize both
                     default: {
                         if ((itemBounds.width !== parentBounds.width) || (itemBounds.height !== parentBounds.height)) {
-                            move(item, parent, command);
+                            move(item, parent, command, artboard);
                             resize(item, parentBounds.width, parentBounds.height);
                         }
                         break; 
@@ -77,57 +78,62 @@ function fit(selection, command) {
     }
 }
 
+// Calculate whether text is point or area
+function textCalc(item, offset, adjustment) {
+    let calc;
+
+    // If it's area
+    if (item.areaBox) {
+
+        // Treat it like a GraphicNode
+        calc = offset;
+    
+    // If it's Point
+    } else {
+
+        // Calculate the offset
+        calc = offset - adjustment;
+    }
+
+    return calc;
+}
+
 // Move based on the type of element
-function move(item, parent, command) {
+function move(item, parent, command, artboard) {
     const itemGlobalBounds = item.globalBounds;
     const parentBounds = parent.boundsInParent;
-    const itemWidth = item.boundsInParent.width;
+    const itemBounds = item.boundsInParent;
+    const itemWidth = itemBounds.width;
     let groupOffsetY = 0;
+    let artboardOffsetX = 0;
+    let artboardOffsetY = 0;
     let offsetX;
     let offsetY;
     let x;
     let y;
 
-    // Calculate whether text is point or area
-    function textCalc(item, offset, adjustment) {
-        let calc;
-
-        // If it's area
-        if (item.areaBox) {
-
-            // Treat it like a GraphicNode
-            calc = offset;
-        
-        // If it's Point
-        } else {
-
-            // Calculate the offset
-            calc = offset - adjustment;
-        }
-
-        return calc;
+    // If the selection is on an Artboard and not a Group, offset the artboard position
+    if (artboard && 'Group' !== item.constructor.name) {
+        const artboardBounds = artboard.boundsInParent;
+        artboardOffsetX = artboardBounds.x;
+        artboardOffsetY = artboardBounds.y;
     }
-
-    // Not sure why group positioning is -2px off when positioning on the y axis
-    if ('Group' === parent.constructor.name && command !== 'width') {
-        groupOffsetY = 2;
-    }
-
+    
     // Calculate offsets based on the direction of resize
     switch(command) {
         case 'width': {
-            offsetX = (itemGlobalBounds.x - parentBounds.x) / -1;
+            offsetX = -(itemGlobalBounds.x - artboardOffsetX - parentBounds.x);
             offsetY = 0;
             break;
         }
         case 'height': {
             offsetX = 0;
-            offsetY = (itemGlobalBounds.y - parentBounds.y) / -1;
+            offsetY = -(itemGlobalBounds.y - artboardOffsetY - parentBounds.y);
             break;
         }
         default: {
-            offsetX = (itemGlobalBounds.x - parentBounds.x) / -1;
-            offsetY = (itemGlobalBounds.y - parentBounds.y) / -1;
+            offsetX = -(itemGlobalBounds.x - artboardOffsetX - parentBounds.x);
+            offsetY = -(itemGlobalBounds.y - artboardOffsetY - parentBounds.y);
             break;
         }
     }
