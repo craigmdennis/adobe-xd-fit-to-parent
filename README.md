@@ -1,4 +1,4 @@
-<img src="./images/resize-to-parent-icon@2x.png" width="48px" alt="">
+<img src="./images/fit-to-parent-icon@2x.png" width="48px" alt="">
 
 # Fit to Parent for Adobe XD
 Resize objects to match the size of their parent group or artboard.
