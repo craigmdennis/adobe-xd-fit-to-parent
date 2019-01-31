@@ -48,7 +48,7 @@ function fit(selection, command) {
                     break;
                 }
                 case 'height': {
-                    item.moveInParentCoordinates(0, -distanceToMove.y);
+                    item.moveInParentCoordinates(-calculateTextOffset(item), -distanceToMove.y);
                     resizeObject(item, currentWidth, desiredHeight);
                     break;
                 }
@@ -61,6 +61,30 @@ function fit(selection, command) {
 
         })
     }
+}
+
+function calculateTextOffset(item) {
+    const itemWidth = item.globalDrawBounds.width;
+    let offset;
+
+    // Calculate offsets based on the text alignment as the anchor point is different
+    // https://adobexdplatform.com/plugin-docs/reference/scenegraph.html#texttextalign--string
+    switch(item.textAlign) {
+        case 'center': {
+            offset = itemWidth/2;
+            break;
+        }
+        case 'right': {
+            offset = itemWidth;
+            break;
+        }
+        default: {
+            offset = 0;
+            break;
+        }
+    }
+
+    return offset;
 }
 
 function resizeObject(item, w, h) {
