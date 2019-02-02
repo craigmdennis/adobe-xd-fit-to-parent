@@ -28,12 +28,11 @@ function fit(selection, command) {
         selection.items.forEach(function (item) {
 
             const parent = item.parent;
-            const distanceToMove = calculateDistance(item, parent);
-
-            let desiredWidth = parent.globalDrawBounds.width;
-            let desiredHeight = parent.globalDrawBounds.height;
-            let currentWidth = item.globalDrawBounds.width;
-            let currentHeight = item.globalDrawBounds.height;
+            const desiredWidth = parent.globalDrawBounds.width;
+            const desiredHeight = parent.globalDrawBounds.height;
+            const currentWidth = item.globalDrawBounds.width;
+            const currentHeight = item.globalDrawBounds.height;
+            const offset = calculateTextOffset(item);
 
             // If there is no parent
             if ('RootNode' === parent.constructor.name) {
@@ -43,18 +42,18 @@ function fit(selection, command) {
 
             switch(command) {
                 case 'width': {
-                    item.moveInParentCoordinates(-distanceToMove.x, 0);
                     resizeObject(item, desiredWidth, currentHeight);
+                    item.moveInParentCoordinates(- calculateDistance(item, parent).x, 0);
                     break;
                 }
                 case 'height': {
-                    item.moveInParentCoordinates(-calculateTextOffset(item), -distanceToMove.y);
                     resizeObject(item, currentWidth, desiredHeight);
+                    item.moveInParentCoordinates(- offset, - calculateDistance(item, parent).y);
                     break;
                 }
                 default: {
-                    item.moveInParentCoordinates(-distanceToMove.x, -distanceToMove.y);
                     resizeObject(item, desiredWidth, desiredHeight);
+                    item.moveInParentCoordinates(- calculateDistance(item, parent).x, - calculateDistance(item, parent).y);
                     break;
                 }
             }
@@ -63,24 +62,27 @@ function fit(selection, command) {
     }
 }
 
+// Calculate offsets based on the text alignment as the anchor point is different
+// https://adobexdplatform.com/plugin-docs/reference/scenegraph.html#texttextalign--string
 function calculateTextOffset(item) {
-    const itemWidth = item.globalDrawBounds.width;
-    let offset;
+    const itemWidth = item.localBounds.width;
+    let offset = 0;
 
-    // Calculate offsets based on the text alignment as the anchor point is different
-    // https://adobexdplatform.com/plugin-docs/reference/scenegraph.html#texttextalign--string
-    switch(item.textAlign) {
-        case 'center': {
-            offset = itemWidth/2;
-            break;
-        }
-        case 'right': {
-            offset = itemWidth;
-            break;
-        }
-        default: {
-            offset = 0;
-            break;
+    // If it doesn't have a areaBox
+    // and is therefore POint text
+    if (null === item.areaBox) {
+        switch(item.textAlign) {
+            case 'center': {
+                offset = itemWidth/2;
+                break;
+            }
+            case 'right': {
+                offset = itemWidth;
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 
