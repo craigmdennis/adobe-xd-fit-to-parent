@@ -1,3 +1,5 @@
+const { alert, error } = require("./lib/dialogs.js");
+
 // Fit to parent width & height
 function fitToParent(selection) {
     fit(selection)
@@ -17,8 +19,9 @@ function fitToParentHeight(selection) {
 function fit(selection, command) {
 
     // If no selection
-    if (0 === selection.length) {
-        console.log('No objects selected.')
+    if (0 === selection.items.length) {
+        alert("Nothing Selected",
+        "Please select one or more objects that are either inside a Group or on an Artboard.");
         return false;
     
     // If objects selected
@@ -37,7 +40,8 @@ function fit(selection, command) {
 
             // If there is no parent
             if ('RootNode' === parent.constructor.name) {
-                console.log('Like Batman, the object doesn\'t have any parents.');
+                alert(`No Parents`,
+                "To resize objects, they need to be inside a Group or on an Artboard.");
                 return false;
             }
 
